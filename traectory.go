@@ -85,3 +85,37 @@ func normalizeAngel(a float64) float64 {
 	}
 	return a
 }
+
+func BuildTraectoryNew(v Vehicle, end r2.Point, moveStep float64, am fuzzy.AssociativeMemory, h func(float64, float64) float64) (ans []VehiclePosition) {
+	d := 0.01
+	ans = append(ans, VehiclePosition{v.x, v.y, v.alpha})
+
+	max := 10000
+	for ; end.Sub(r2.Point{v.x, v.y}).Norm() > moveStep && max > 0; max-- {
+		_, tilt := v.FindDegrees(h)
+		deviation := v.FindDeviation(end.X, end.Y)
+
+		log.Println(v.x, v.y)
+
+		log.Println("til:", tilt)
+		log.Println("dev:", deviation)
+
+		turn := am.Defuzzify(deviation, tilt, d)
+		log.Println("Turn:", turn)
+
+		log.Println("Angel", v.alpha)
+
+		v.TurnRight(turn)
+		v.MoveForward(moveStep)
+
+		ans = append(ans, Pos(&v))
+		log.Println()
+	}
+	if max == 0 {
+		log.Println("Steps limit reached")
+	} else {
+		log.Println("End point reached. Number of steps", 10000-max)
+	}
+
+	return
+}

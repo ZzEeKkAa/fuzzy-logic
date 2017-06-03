@@ -21,35 +21,55 @@ import (
 
 func main() {
 	var s Surface
-	s.SetCore(func(x, y float64) float64 {
+	h := func(x, y float64) float64 {
 		//return 0
-		return math.Sin((x - 10) * (y - 5) / 5)
-	})
-	//for i := 0.; i < 10; i += 0.01 {
-	//	log.Println(s.GetVehicleAngels(i, 2*i, 0, 0.05, 0.02))
+		//return math.Sin((x - 10) * (y - 5) / 5)
+		return math.Sin((x) * (y) / 5)
+	}
+	s.SetCore(h)
+
+	//deviationSet := fuzzy.Set{
+	//	{r2.Point{X: -180, Y: 1}, r2.Point{X: -180, Y: 1}, r2.Point{X: -60, Y: 1}, r2.Point{X: -50, Y: 0}},
+	//	{r2.Point{X: -100, Y: 0}, r2.Point{X: -40, Y: 1}, r2.Point{X: -35, Y: 1}, r2.Point{X: -15, Y: 0}},
+	//	{r2.Point{X: -20, Y: 0}, r2.Point{X: -5, Y: 1}, r2.Point{X: 5, Y: 1}, r2.Point{X: 20, Y: 0}},
+	//	{r2.Point{X: 15, Y: 0}, r2.Point{X: 35, Y: 1}, r2.Point{X: 40, Y: 1}, r2.Point{X: 60, Y: 0}},
+	//	{r2.Point{X: 50, Y: 0}, r2.Point{X: 100, Y: 1}, r2.Point{X: 180, Y: 1}, r2.Point{X: 180, Y: 1}},
+	//}
+	//tiltSet := fuzzy.Set{
+	//	{r2.Point{X: -90, Y: 1}, r2.Point{X: -90, Y: 1}, r2.Point{X: -30, Y: 1}, r2.Point{X: -25, Y: 0}},
+	//	{r2.Point{X: -30, Y: 0}, r2.Point{X: -25, Y: 1}, r2.Point{X: -10, Y: 1}, r2.Point{X: -5, Y: 0}},
+	//	{r2.Point{X: -10, Y: 0}, r2.Point{X: -5, Y: 1}, r2.Point{X: 5, Y: 1}, r2.Point{X: 10, Y: 0}},
+	//	{r2.Point{X: 5, Y: 0}, r2.Point{X: 10, Y: 1}, r2.Point{X: 25, Y: 1}, r2.Point{X: 30, Y: 0}},
+	//	{r2.Point{X: 25, Y: 0}, r2.Point{X: 30, Y: 1}, r2.Point{X: 90, Y: 1}, r2.Point{X: 90, Y: 1}},
+	//}
+	//turnSet := fuzzy.Set{
+	//	{r2.Point{X: -60, Y: 1}, r2.Point{X: -60, Y: 1}, r2.Point{X: -40, Y: 1}, r2.Point{X: -30, Y: 0}},
+	//	{r2.Point{X: -40, Y: 0}, r2.Point{X: -30, Y: 1}, r2.Point{X: -10, Y: 1}, r2.Point{X: -5, Y: 0}},
+	//	{r2.Point{X: -15, Y: 0}, r2.Point{X: 0, Y: 1}, r2.Point{X: 0, Y: 1}, r2.Point{X: 15, Y: 0}},
+	//	{r2.Point{X: 5, Y: 0}, r2.Point{X: 10, Y: 1}, r2.Point{X: 30, Y: 1}, r2.Point{X: 40, Y: 0}},
+	//	{r2.Point{X: 30, Y: 0}, r2.Point{X: 40, Y: 1}, r2.Point{X: 60, Y: 1}, r2.Point{X: 60, Y: 1}},
 	//}
 
 	deviationSet := fuzzy.Set{
-		{r2.Point{X: -180, Y: 1}, r2.Point{X: -180, Y: 1}, r2.Point{X: -60, Y: 1}, r2.Point{X: -50, Y: 0}},
+		{r2.Point{X: -180, Y: 1}, r2.Point{X: -180, Y: 1}, r2.Point{X: -70, Y: 1}, r2.Point{X: -30, Y: 0}},
 		{r2.Point{X: -100, Y: 0}, r2.Point{X: -40, Y: 1}, r2.Point{X: -35, Y: 1}, r2.Point{X: -15, Y: 0}},
 		{r2.Point{X: -20, Y: 0}, r2.Point{X: -5, Y: 1}, r2.Point{X: 5, Y: 1}, r2.Point{X: 20, Y: 0}},
-		{r2.Point{X: 15, Y: 0}, r2.Point{X: 35, Y: 1}, r2.Point{X: 40, Y: 1}, r2.Point{X: 60, Y: 0}},
-		{r2.Point{X: 50, Y: 0}, r2.Point{X: 100, Y: 1}, r2.Point{X: 180, Y: 1}, r2.Point{X: 180, Y: 1}},
+		{r2.Point{X: 15, Y: 0}, r2.Point{X: 35, Y: 1}, r2.Point{X: 40, Y: 1}, r2.Point{X: 100, Y: 0}},
+		{r2.Point{X: 30, Y: 0}, r2.Point{X: 70, Y: 1}, r2.Point{X: 180, Y: 1}, r2.Point{X: 180, Y: 1}},
 	}
 	tiltSet := fuzzy.Set{
-		{r2.Point{X: -90, Y: 1}, r2.Point{X: -90, Y: 1}, r2.Point{X: -30, Y: 1}, r2.Point{X: -25, Y: 0}},
-		{r2.Point{X: -30, Y: 0}, r2.Point{X: -25, Y: 1}, r2.Point{X: -10, Y: 1}, r2.Point{X: -5, Y: 0}},
-		{r2.Point{X: -10, Y: 0}, r2.Point{X: -5, Y: 1}, r2.Point{X: 5, Y: 1}, r2.Point{X: 10, Y: 0}},
-		{r2.Point{X: 5, Y: 0}, r2.Point{X: 10, Y: 1}, r2.Point{X: 25, Y: 1}, r2.Point{X: 30, Y: 0}},
-		{r2.Point{X: 25, Y: 0}, r2.Point{X: 30, Y: 1}, r2.Point{X: 90, Y: 1}, r2.Point{X: 90, Y: 1}},
+		{r2.Point{X: -90, Y: 1}, r2.Point{X: -90, Y: 1}, r2.Point{X: -50, Y: 1}, r2.Point{X: -25, Y: 0}},
+		{r2.Point{X: -30, Y: 0}, r2.Point{X: -20, Y: 1}, r2.Point{X: -15, Y: 1}, r2.Point{X: -5, Y: 0}},
+		{r2.Point{X: -10, Y: 0}, r2.Point{X: -2, Y: 1}, r2.Point{X: 2, Y: 1}, r2.Point{X: 10, Y: 0}},
+		{r2.Point{X: 5, Y: 0}, r2.Point{X: 15, Y: 1}, r2.Point{X: 20, Y: 1}, r2.Point{X: 30, Y: 0}},
+		{r2.Point{X: 25, Y: 0}, r2.Point{X: 50, Y: 1}, r2.Point{X: 90, Y: 1}, r2.Point{X: 90, Y: 1}},
 	}
-
 	turnSet := fuzzy.Set{
-		{r2.Point{X: -60, Y: 1}, r2.Point{X: -60, Y: 1}, r2.Point{X: -40, Y: 1}, r2.Point{X: -30, Y: 0}},
-		{r2.Point{X: -40, Y: 0}, r2.Point{X: -30, Y: 1}, r2.Point{X: -10, Y: 1}, r2.Point{X: -5, Y: 0}},
+		{r2.Point{X: -60, Y: 1}, r2.Point{X: -60, Y: 1}, r2.Point{X: -40, Y: 1}, r2.Point{X: -25, Y: 0}},
+		{r2.Point{X: -40, Y: 0}, r2.Point{X: -25, Y: 1}, r2.Point{X: -20, Y: 1}, r2.Point{X: -5, Y: 0}},
 		{r2.Point{X: -15, Y: 0}, r2.Point{X: 0, Y: 1}, r2.Point{X: 0, Y: 1}, r2.Point{X: 15, Y: 0}},
-		{r2.Point{X: 5, Y: 0}, r2.Point{X: 10, Y: 1}, r2.Point{X: 30, Y: 1}, r2.Point{X: 40, Y: 0}},
-		{r2.Point{X: 30, Y: 0}, r2.Point{X: 40, Y: 1}, r2.Point{X: 60, Y: 1}, r2.Point{X: 60, Y: 1}},
+		{r2.Point{X: 5, Y: 0}, r2.Point{X: 20, Y: 1}, r2.Point{X: 25, Y: 1}, r2.Point{X: 40, Y: 0}},
+		{r2.Point{X: 25, Y: 0}, r2.Point{X: 40, Y: 1}, r2.Point{X: 60, Y: 1}, r2.Point{X: 60, Y: 1}},
 	}
 
 	am := fuzzy.AssociativeMemory{}
@@ -62,7 +82,7 @@ func main() {
 		&turnSet[1], &turnSet[2], &turnSet[3], &turnSet[4], &turnSet[4],
 	)
 
-	traectory := BuildTraectory(0.2, 0.1, r2.Point{X: 0, Y: 0}, 0, r2.Point{X: 20, Y: 10}, 0.1, am, s)
+	traectory := BuildTraectoryNew(Vehicle{a: 0.1, b: 0.2, x: 0, y: 0, alpha: 0}, r2.Point{X: 20, Y: 10}, 0.5, am, h)
 	log.Println(traectory)
 
 	k := 20.
@@ -74,10 +94,12 @@ func main() {
 	gc.SetLineWidth(1)
 
 	//gc.SetStrokeColor(color.RGBA{G: 255, A: 255})
-	gc.MoveTo(traectory[0].X, traectory[0].Y)
+	gc.MoveTo(traectory[0].x, traectory[0].y)
 	for _, p := range traectory {
-		gc.LineTo(p.X*k, p.Y*k)
-		gc.MoveTo(p.X*k, p.Y*k)
+		//gc.LineTo(p.X*k, p.Y*k)
+		//gc.MoveTo(p.X*k, p.Y*k)
+		gc.LineTo(p.x*k, p.y*k)
+		gc.MoveTo(p.x*k, p.y*k)
 	}
 	gc.Close()
 	gc.FillStroke()
@@ -89,7 +111,6 @@ func main() {
 func drawSurface(img *image.RGBA, s Surface, k float64, max, min float64) {
 	for i := 0; i < 500; i++ {
 		for j := 0; j < 500; j++ {
-			//log.Println(i, j)
 			h := s.GetHeight(float64(i)/k, float64(j)/k)
 			k := 0.
 			if h > max {

@@ -20,14 +20,14 @@ func (s *Surface) GetHeight(x, y float64) float64 {
 
 // This function calculates angle proection of normalized vector at left side and right side
 func (s *Surface) GetVehicleAngels(x, y, phi, a, b float64) (float64, float64) {
-	xtl := x + a*math.Cos(phi) + b*math.Sin(phi)
+	xbr := x + a*math.Cos(phi) + b*math.Sin(phi)
 	xtr := x + a*math.Cos(phi) - b*math.Sin(phi)
-	xbr := x - a*math.Cos(phi) - b*math.Sin(phi)
+	xtl := x - a*math.Cos(phi) - b*math.Sin(phi)
 	xbl := x - a*math.Cos(phi) + b*math.Sin(phi)
 
-	ytl := y + a*math.Sin(phi) - b*math.Cos(phi)
+	ybr := y + a*math.Sin(phi) - b*math.Cos(phi)
 	ytr := y + a*math.Sin(phi) + b*math.Cos(phi)
-	ybr := y - a*math.Sin(phi) + b*math.Cos(phi)
+	ytl := y - a*math.Sin(phi) + b*math.Cos(phi)
 	ybl := y - a*math.Sin(phi) - b*math.Cos(phi)
 
 	ztr := s.GetHeight(xtr, ytr)
@@ -46,7 +46,6 @@ func (s *Surface) GetVehicleAngels(x, y, phi, a, b float64) (float64, float64) {
 	nbl := brbl.Cross(bltl).Normalize()
 
 	n := ntl.Add(ntr).Add(nbr).Add(nbl).Mul(0.25)
-	lra := n.Angle(r3.Vector{X: xtl - xtr, Y: ytl - ytr, Z: 0}).Degrees()
 
-	return n.Angle(r3.Vector{X: xtl - xbl, Y: ytl - ybl, Z: 0}).Degrees() - 90, -lra + 90
+	return 90 - n.Angle(r3.Vector{X: -math.Sin(phi), Y: math.Cos(phi), Z: 0}).Degrees(), -90 + n.Angle(r3.Vector{X: math.Cos(phi), Y: math.Sin(phi), Z: 0}).Degrees()
 }
