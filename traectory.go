@@ -86,13 +86,16 @@ func normalizeAngel(a float64) float64 {
 	return a
 }
 
-func BuildTraectoryNew(v Vehicle, end r2.Point, moveStep float64, am fuzzy.AssociativeMemory, h func(float64, float64) float64) (ans []VehiclePosition) {
+func BuildTrajectoryNew(v Vehicle, end r2.Point, moveStep float64, eps float64, amUp fuzzy.AssociativeMemory, amDown fuzzy.AssociativeMemory, h func(float64, float64) float64) (ans []VehiclePosition) {
 	d := 0.01
 	ans = append(ans, VehiclePosition{v.x, v.y, v.alpha})
 
-	max := 10000
-	for ; end.Sub(r2.Point{v.x, v.y}).Norm() > moveStep && max > 0; max-- {
-		_, tilt := v.FindDegrees(h)
+	var defuzzify = amDown.Defuzzify
+	var alpha = 15.
+
+	max := 100000
+	for ; end.Sub(r2.Point{v.x, v.y}).Norm() > eps && max > 0; max-- {
+		tang, tilt := v.FindDegrees(h)
 		deviation := v.FindDeviation(end.X, end.Y)
 
 		log.Println(v.x, v.y)
@@ -100,7 +103,14 @@ func BuildTraectoryNew(v Vehicle, end r2.Point, moveStep float64, am fuzzy.Assoc
 		log.Println("til:", tilt)
 		log.Println("dev:", deviation)
 
-		turn := am.Defuzzify(deviation, tilt, d)
+		var turn float64
+		if tang < -alpha {
+			defuzzify = amDown.Defuzzify
+		} else if tang > alpha {
+			defuzzify = amUp.Defuzzify
+		}
+		turn = defuzzify(deviation, tilt, d)
+
 		log.Println("Turn:", turn)
 
 		log.Println("Angel", v.alpha)

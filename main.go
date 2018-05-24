@@ -1,18 +1,14 @@
 package main
 
 import (
-	"log"
-
 	"image"
-
+	"image/color"
 	"image/png"
+	"log"
+	"math"
 	"os"
 
-	"image/color"
-
 	"time"
-
-	"math"
 
 	"github.com/ZzEeKkAa/fuzzy-logic/fuzzy"
 	"github.com/golang/geo/r2"
@@ -20,13 +16,13 @@ import (
 )
 
 func main() {
-	var s Surface
+	var surface Surface
 	h := func(x, y float64) float64 {
 		//return 0
 		//return math.Sin((x - 10) * (y - 5) / 5)
 		return math.Sin((x) * (y) / 5)
 	}
-	s.SetCore(h)
+	surface.SetCore(h)
 
 	//deviationSet := fuzzy.Set{
 	//	{r2.Point{X: -180, Y: 1}, r2.Point{X: -180, Y: 1}, r2.Point{X: -60, Y: 1}, r2.Point{X: -50, Y: 0}},
@@ -72,9 +68,9 @@ func main() {
 		{r2.Point{X: 25, Y: 0}, r2.Point{X: 40, Y: 1}, r2.Point{X: 60, Y: 1}, r2.Point{X: 60, Y: 1}},
 	}
 
-	am := fuzzy.AssociativeMemory{}
-	am.Init(deviationSet, tiltSet)
-	am.Set(
+	amDown := fuzzy.AssociativeMemory{}
+	amDown.Init(deviationSet, tiltSet)
+	amDown.Set(
 		&turnSet[0], &turnSet[0], &turnSet[1], &turnSet[2], &turnSet[2],
 		&turnSet[0], &turnSet[1], &turnSet[1], &turnSet[2], &turnSet[3],
 		&turnSet[1], &turnSet[1], &turnSet[2], &turnSet[3], &turnSet[3],
@@ -82,28 +78,60 @@ func main() {
 		&turnSet[1], &turnSet[2], &turnSet[3], &turnSet[4], &turnSet[4],
 	)
 
-	traectory := BuildTraectoryNew(Vehicle{a: 0.1, b: 0.2, x: 0, y: 0, alpha: 0}, r2.Point{X: 20, Y: 10}, 0.5, am, h)
-	log.Println(traectory)
+	amUp := fuzzy.AssociativeMemory{}
+	amUp.Init(deviationSet, tiltSet)
+	amUp.Set(
+		&turnSet[1], &turnSet[2], &turnSet[3], &turnSet[4], &turnSet[4],
+		&turnSet[1], &turnSet[1], &turnSet[3], &turnSet[3], &turnSet[4],
+		&turnSet[1], &turnSet[1], &turnSet[2], &turnSet[3], &turnSet[3],
+		&turnSet[0], &turnSet[1], &turnSet[1], &turnSet[2], &turnSet[3],
+		&turnSet[0], &turnSet[0], &turnSet[1], &turnSet[2], &turnSet[2],
+	)
+
+	var vehicle = Vehicle{a: 0.1, b: 0.2, x: 0, y: 0, alpha: 0}
+	var endPoint = r2.Point{X: 20, Y: 10}
+
+	trajectory := BuildTrajectoryNew(vehicle, endPoint, 0.01, 0.1, amDown, amDown, surface.GetHeight)
+	//log.Println(trajectory)
+
+	score := ScoreTraectory(vehicle, trajectory, surface)
+
+	log.Println("Score: ", score)
 
 	k := 20.
 	img := image.NewRGBA(image.Rect(0, 0, 500, 500))
-	drawSurface(img, s, k, 2, -2)
-	gc := draw2dimg.NewGraphicContext(img)
-	gc.SetStrokeColor(image.Black)
-	gc.SetFillColor(color.RGBA{})
-	gc.SetLineWidth(1)
+	drawSurface(img, surface, k, 2, -2)
 
-	//gc.SetStrokeColor(color.RGBA{G: 255, A: 255})
-	gc.MoveTo(traectory[0].x, traectory[0].y)
-	for _, p := range traectory {
+	lastPoint := trajectory[0]
+	for _, p := range trajectory {
+		//gc.SetStrokeColor(color.RGBA{G: 255, A: 255})
+		gc := draw2dimg.NewGraphicContext(img)
+		gc.SetStrokeColor(image.Black)
+		gc.SetFillColor(color.RGBA{})
+		gc.SetLineWidth(1)
+		gc.MoveTo(lastPoint.x*k, lastPoint.y*k)
+
+		vehicle.ApplyPosition(&p)
+		tang, _ := vehicle.FindDegrees(surface.GetHeight)
+
+		c := uint8((tang + 90) / 180 * 255)
+		gc.SetStrokeColor(color.RGBA{R: c, G: c, B: c, A: 255})
 		//gc.LineTo(p.X*k, p.Y*k)
 		//gc.MoveTo(p.X*k, p.Y*k)
 		gc.LineTo(p.x*k, p.y*k)
-		gc.MoveTo(p.x*k, p.y*k)
+		//gc.MoveTo(p.x*k, p.y*k)
+		gc.Close()
+		gc.FillStroke()
+		lastPoint = p
 	}
-	gc.Close()
-	gc.FillStroke()
-	f, _ := os.Create("path_" + time.Now().String() + ".png")
+
+	img.Set(int(endPoint.X*k), int(endPoint.Y*k), color.RGBA{255, 0, 0, 255})
+	img.Set(int(endPoint.X*k-1), int(endPoint.Y*k), color.RGBA{255, 0, 0, 255})
+	img.Set(int(endPoint.X*k+1), int(endPoint.Y*k), color.RGBA{255, 0, 0, 255})
+	img.Set(int(endPoint.X*k), int(endPoint.Y*k-1), color.RGBA{255, 0, 0, 255})
+	img.Set(int(endPoint.X*k), int(endPoint.Y*k+1), color.RGBA{255, 0, 0, 255})
+	f, _ := os.Create("dist/path_" + time.Now().String() + ".png")
+	//f, _ := os.Create("dist/path_tmp.png")
 	png.Encode(f, img)
 	f.Close()
 }

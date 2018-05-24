@@ -91,3 +91,9 @@ type VehiclePosition struct {
 func Pos(v *Vehicle) VehiclePosition {
 	return VehiclePosition{x: v.x, y: v.y, alpha: v.alpha}
 }
+
+func (v *Vehicle) ApplyPosition(pos *VehiclePosition) {
+	v.alpha = pos.alpha
+	v.x = pos.x
+	v.y = pos.y
+}
